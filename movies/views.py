@@ -61,8 +61,8 @@ def delete_review(request, id, review_id):
 @login_required
 def report_review(request, id, review_id):
     review = get_object_or_404(Review, id=review_id)
-    # Prevent users from reporting their own reviews
-    if review.user == request.user:
+    # Allow superusers to report any review, but prevent normal users from self-reporting
+    if not request.user.is_superuser and review.user == request.user:
         return redirect('movies.show', id=id)
     review.is_reported = True
     review.save()
